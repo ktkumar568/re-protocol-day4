@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Re Protocol Quiz Challenge — Day 2</title>
+  <style>
+    :root{
+      --bg:#0f5132; /* deep green */
+      --card:#ffffff;
+      --accent:#6ee7b7; /* mint */
+      --accent-2:#7dd3fc; /* blue */
+      --muted:#6b7280;
+      --danger:#ff6b6b;
+      --glass: rgba(255,255,255,0.06);
+      --shadow: 0 8px 30px rgba(2,6,23,0.4);
+      --radius:14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#063826 120%);color:#052018}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px}
+    .card{width:920px;max-width:96vw;background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.94));border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+
+    header{display:flex;align-items:center;gap:16px;padding:20px 26px;border-bottom:1px solid rgba(0,0,0,0.06)}
+    .logo{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#053023;font-weight:700;font-size:18px}
+    h1{font-size:20px;margin:0}
+    .meta{margin-left:auto;text-align:right;font-size:13px;color:var(--muted)}
+
+    main{display:grid;grid-template-columns:1fr 340px;gap:20px;padding:26px}
+    .quiz{
+      padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(11,58,40,0.02), rgba(11,58,40,0.01));
+    }
+    .question{font-size:18px;margin-bottom:14px}
+    .options{display:grid;gap:12px}
+    .option{padding:14px;border-radius:10px;background:var(--card);cursor:pointer;border:1px solid rgba(5,32,24,0.06);display:flex;align-items:center;gap:12px;transition:transform .12s ease, box-shadow .12s ease}
+    .option:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(5,32,24,0.06)}
+    .option.correct{background:linear-gradient(90deg,var(--accent), #d1fae5);border-color:rgba(34,197,94,0.25)}
+    .option.wrong{background:linear-gradient(90deg,#ffe6e6,#fff);border-color:rgba(255,107,107,0.15)}
+
+    .controls{display:flex;align-items:center;gap:12px;margin-top:16px}
+    .btn{padding:10px 14px;border-radius:10px;background:var(--accent);border:none;color:#052018;font-weight:700;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(5,32,24,0.06)}
+
+    aside{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));border-left:1px dashed rgba(5,32,24,0.04)}
+    .timer{font-size:28px;font-weight:800;text-align:center;padding:18px;border-radius:10px;background:linear-gradient(180deg,var(--accent),#baf7d7);color:#053023}
+    .progress{margin-top:18px}
+    .progress-bar{height:12px;background:var(--glass);border-radius:999px;overflow:hidden}
+    .progress-bar > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width 0.25s linear}
+    .meta-block{margin-top:12px;font-size:13px;color:var(--muted)}
+    .score{font-size:16px;font-weight:700;margin-top:14px}
+
+    footer{padding:16px 26px;border-top:1px solid rgba(0,0,0,0.04);display:flex;justify-content:space-between;align-items:center}
+    .small{font-size:13px;color:var(--muted)}
+
+    @media (max-width:900px){main{grid-template-columns:1fr;}
+      aside{order:2}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="application" aria-labelledby="title">
+      <header>
+        <div class="logo">RP</div>
+        <div>
+          <h1 id="title">Re Protocol Quiz Challenge — Day 2</h1>
+          <div class="small">Project: <strong>Re protocol quiz challenge day2</strong> · Theme: Green & Colorful</div>
+        </div>
+        <div class="meta">
+          <div>10 Questions · Multiple choice</div>
+          <div id="per-question-time">Time per question: <strong>20s</strong></div>
+        </div>
+      </header>
+
+      <main>
+        <section class="quiz" aria-live="polite">
+          <div id="qwrap">
+            <div class="question" id="questionText">Loading question...</div>
+            <div class="options" id="options"></div>
+          </div>
+
+          <div class="controls">
+            <button class="btn" id="nextBtn">Next</button>
+            <button class="btn ghost" id="skipBtn">Skip</button>
+            <div style="margin-left:auto;color:var(--muted)">Progress: <span id="qnum">0</span>/10</div>
+          </div>
+        </section>
+
+        <aside>
+          <div class="timer" id="timer">20</div>
+          <div class="progress">
+            <div class="progress-bar" aria-hidden="true"><i id="progressFill"></i></div>
+          </div>
+          <div class="meta-block">
+            <div class="score">Score: <span id="score">0</span></div>
+            <div style="margin-top:8px">Correct answers will light up green. Wrong answers light red.</div>
+          </div>
+        </aside>
+      </main>
+
+      <footer>
+        <div class="small">Use this index.html to run the Re Protocol quiz locally. Built with vanilla JS — no dependencies.</div>
+        <div class="small">Good luck!</div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // QUESTIONS: (10 items) - each object: {q, options:[...], a: index}
+    const QUESTIONS = [
+      { q: "What is reUSD (Basis-Plus)?", options:[
+          "A high-volatility token that invests entirely in cryptocurrencies",
+          "A principal-protected, yield-accruing token that switches between risk-free and basis strategies",
+          "A token that only invests in insurance underwriting risk",
+          "A governance token for Re Protocol"
+        ], a:1 },
+
+      { q: "Which yield sources does reUSD consider in its 'dual-source yield floor'?", options:[
+          "Lending to DeFi protocols and staking rewards",
+          "Insurance underwriting returns and token emissions",
+          "Risk-free rate (e.g. T-bills) + 250 bps, or Ethena basis trade yield + 250 bps",
+          "Only ETH staking yields"
+        ], a:2 },
+
+      { q: "How does reUSD distribute its yield to token holders?", options:[
+          "By minting new tokens distributed daily",
+          "By increasing the token price daily (rather than token quantity)",
+          "By paying out ETH directly",
+          "By issuing a separate reward token"
+        ], a:1 },
+
+      { q: "What is the 'instant liquidity' feature of Basis-Plus?", options:[
+          "You can immediately withdraw unlimited amounts at any time",
+          "You can swap your reUSD on Curve at any time, subject to liquidity constraints",
+          "It mints an instantly liquid stablecoin",
+          "It provides immediate insurance coverage"
+        ], a:1 },
+
+      { q: "Which of the following is NOT a characteristic of reUSD?", options:[
+          "It is principal-protected",
+          "It accrues yield daily",
+          "It is exposed to insurance underwriting risk",
+          "It remains redeemable for underlying collateral (subject to limits)"
+        ], a:2 },
+
+      { q: "What are 'Surplus Notes' in the context of reUSD?", options:[
+          "Insurance policies underwritten by the protocol",
+          "Off-chain debt instruments issued to support principal protection and match APY",
+          "Governance tokens for protocol decisions",
+          "Rewards tokens for liquidity providers"
+        ], a:1 },
+
+      { q: "When U.S. users try to access reUSD, what constraint do they face?", options:[
+          "They must stake a minimum of $1,000,000",
+          "reUSD is not available to U.S. persons",
+          "They get a different token called reUSDe",
+          "They must pay a 50% withholding tax immediately"
+        ], a:1 },
+
+      { q: "Which of these is not part of reUSD's liquidity and redemption framework?", options:[
+          "A 'smooth buffer' that allows instant redemption up to a cap",
+          "A scheduled monthly redemption window",
+          "Unlimited instant redemption",
+          "The ability to re-liquify via actuarial releases of collateral"
+        ], a:2 },
+
+      { q: "What is the role of Chainlink in the reUSD protocol?", options:[
+          "It mints new reUSD tokens",
+          "It provides oracle feeds for NAV, buffer utilization, and surplus note balances",
+          "It underwrites insurance risk",
+          "It manages liquidity pools"
+        ], a:1 },
+
+      { q: "Which statement about reUSD vs traditional money-market funds is correct?", options:[
+          "reUSD always yields less than a money-market fund",
+          "reUSD has no on-chain composability",
+          "reUSD may yield higher returns by switching to basis strategies when favorable",
+          "reUSD does not preserve principal"
+        ], a:2 }
+    ];
+
+    // CONFIG
+    const TIME_PER_QUESTION = 20; // seconds
+    let index = 0, score = 0, timeLeft = TIME_PER_QUESTION, timerId = null, answered = false, progress = 0;
+
+    // UI refs
+    const qText = document.getElementById('questionText');
+    const optionsEl = document.getElementById('options');
+    const timerEl = document.getElementById('timer');
+    const nextBtn = document.getElementById('nextBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const scoreEl = document.getElementById('score');
+    const qnum = document.getElementById('qnum');
+    const progressFill = document.getElementById('progressFill');
+
+    function startQuiz(){
+      index = 0; score = 0; progress = 0; updateScore(); renderQuestion();
+    }
+
+    function renderQuestion(){
+      clearInterval(timerId);
+      answered = false; timeLeft = TIME_PER_QUESTION; updateTimer();
+      const item = QUESTIONS[index];
+      qText.textContent = item.q;
+      optionsEl.innerHTML = '';
+      item.options.forEach((opt,i)=>{
+        const d = document.createElement('button');
+        d.className = 'option';
+        d.type = 'button';
+        d.innerHTML = `<span style=\"font-weight:700;min-width:28px;text-align:center;display:inline-block\">${String.fromCharCode(65+i)}</span> ${opt}`;
+        d.addEventListener('click', ()=> selectOption(i,d));
+        optionsEl.appendChild(d);
+      });
+      qnum.textContent = `${index+1}`;
+      progressFill.style.width = `${Math.round(((index)/QUESTIONS.length)*100)}%`;
+      startTimer();
+    }
+
+    function startTimer(){
+      timerId = setInterval(()=>{
+        timeLeft -= 1; updateTimer();
+        if(timeLeft <= 0){
+          clearInterval(timerId);
+          handleTimeout();
+        }
+      },1000);
+    }
+
+    function updateTimer(){
+      timerEl.textContent = String(timeLeft).padStart(2,'0');
+      const percent = (TIME_PER_QUESTION - timeLeft)/TIME_PER_QUESTION*100;
+      progressFill.style.width = `${Math.min(100, percent)}%`;
+      // flash when low
+      if(timeLeft <= 5) timerEl.style.transform = 'scale(1.03)'; else timerEl.style.transform = 'none';
+    }
+
+    function selectOption(choice,btn){
+      if(answered) return;
+      answered = true; clearInterval(timerId);
+      const correct = QUESTIONS[index].a;
+      if(choice === correct){
+        btn.classList.add('correct'); score += 1; updateScore();
+      } else {
+        btn.classList.add('wrong');
+        // mark correct
+        const children = Array.from(optionsEl.children);
+        if(children[correct]) children[correct].classList.add('correct');
+      }
+    }
+
+    function handleTimeout(){
+      // mark correct
+      answered = true;
+      const correct = QUESTIONS[index].a;
+      const children = Array.from(optionsEl.children);
+      if(children[correct]) children[correct].classList.add('correct');
+    }
+
+    nextBtn.addEventListener('click', ()=>{
+      // move to next question
+      if(!answered){ /* allow moving on even if not answered */ clearInterval(timerId); }
+      if(index < QUESTIONS.length - 1){ index++; renderQuestion(); }
+      else { finishQuiz(); }
+    });
+
+    skipBtn.addEventListener('click', ()=>{
+      // mark as skipped (no score change)
+      clearInterval(timerId);
+      if(index < QUESTIONS.length - 1){ index++; renderQuestion(); } else finishQuiz();
+    });
+
+    function finishQuiz(){
+      clearInterval(timerId);
+      // show results in place
+      const pct = Math.round((score/QUESTIONS.length)*100);
+      document.querySelector('.quiz').innerHTML = `\n        <div style=\"padding:18px\">\n          <h2 style=\"margin:0 0 8px 0\">Quiz complete</h2>\n          <div style=\"font-size:20px;font-weight:800\">${score}/${QUESTIONS.length} correct · ${pct}%</div>\n          <p style=\"color:var(--muted);margin-top:8px\">Great work — you can restart to try again or review answers below.</p>\n          <div style=\"margin-top:14px;display:flex;gap:8px\">\n            <button class=\"btn\" id=\"restart\">Restart</button>\n            <button class=\"btn ghost\" id=\"review\">Review Questions</button>\n          </div>\n        </div>`;
+
+      document.getElementById('restart').addEventListener('click', ()=>{ location.reload(); });
+      document.getElementById('review').addEventListener('click', ()=>{ showReview(); });
+      progressFill.style.width = `100%`;
+    }
+
+    function showReview(){
+      const wrap = document.querySelector('.quiz');
+      wrap.innerHTML = `<div style=\"padding:18px\"><h2 style=\"margin-top:0\">Review</h2></div>`;
+      QUESTIONS.forEach((it,i)=>{
+        const el = document.createElement('div');
+        el.style.padding = '12px'; el.style.borderBottom = '1px dashed rgba(0,0,0,0.04)';
+        el.innerHTML = `<div style=\"font-weight:700\">Q${i+1}. ${it.q}</div>` +
+          `<div style=\"margin-top:8px\">${it.options.map((op,idx)=>`<div style=\"padding:8px;border-radius:8px;margin-top:6px;background:${idx===it.a? 'linear-gradient(90deg,var(--accent),#d1fae5)':'#fff'}\"><strong>${String.fromCharCode(65+idx)}</strong>. ${op}</div>`).join('')}</div>`;
+        wrap.appendChild(el);
+      });
+    }
+
+    function updateScore(){ scoreEl.textContent = score; }
+
+    // start
+    startQuiz();
+  </script>
+</body>
+</html>
